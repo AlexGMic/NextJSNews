@@ -6,6 +6,8 @@ import connectDB from "@/config/connectDB.js";
 import { NextResponse } from "next/server";
 import { StatusCodes } from "http-status-codes";
 
+export const maxDuration = 300;
+
 export async function POST(request) {
   try {
     const expectedURLKEY = process.env.CHANNEL_API_KEY;
