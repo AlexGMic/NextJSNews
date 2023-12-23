@@ -221,6 +221,9 @@ export async function PUT(request, { params }) {
         },
         { status: StatusCodes.OK }
       );
+    } else {
+      const redirectUrl = new URL("/not-found", request.url);
+      return NextResponse.redirect(redirectUrl);
     }
   } catch (error) {
     return NextResponse.json(
