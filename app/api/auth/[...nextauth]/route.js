@@ -4,8 +4,6 @@ import NextAuth from "next-auth/next";
 import connectDB from "@/config/connectDB.js";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-export const maxDuration = 300;
-
 export const authOptions = {
   providers: [
     CredentialsProvider({
