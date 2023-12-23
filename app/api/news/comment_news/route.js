@@ -1,6 +1,6 @@
-import News from "@/model/News.js";
 import User from "@/model/User";
 import mongoose from "mongoose";
+import News from "@/model/News.js";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import connectDB from "@/config/connectDB.js";

@@ -21,7 +21,8 @@
     "react-dom": "latest",
     "react-icons": "^4.12.0",
     "sharp": "^0.33.1",
-    "use-debounce": "^10.0.0"
+    "use-debounce": "^10.0.0",
+    "vercel": "^33.0.1"
   },
   "devDependencies": {
     "autoprefixer": "latest",

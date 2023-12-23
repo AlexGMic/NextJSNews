@@ -85,7 +85,7 @@ export default async function LikedNews({ searchParams }) {
           <div className="flex items-center gap-[20px] max-[900px]:grid max-[1080px]:grid-cols-4 max-[1080px]:gap-4 max-[650px]:grid-cols-3 max-[450px]:grid-cols-2">
             <Link
               href={{
-                pathname: "/explore",
+                pathname: "/likes",
                 query: {
                   ...(search_news ? { search_news } : {}),
                   category: "",
@@ -98,7 +98,7 @@ export default async function LikedNews({ searchParams }) {
             </Link>
             <Link
               href={{
-                pathname: "/explore",
+                pathname: "/likes",
                 query: {
                   ...(search_news ? { search_news } : {}),
                   category: "Latest",
@@ -110,7 +110,7 @@ export default async function LikedNews({ searchParams }) {
             </Link>
             <Link
               href={{
-                pathname: "/explore",
+                pathname: "/likes",
                 query: {
                   ...(search_news ? { search_news } : {}),
                   category: "Trending",
@@ -122,7 +122,7 @@ export default async function LikedNews({ searchParams }) {
             </Link>
             <Link
               href={{
-                pathname: "/explore",
+                pathname: "/likes",
                 query: {
                   ...(search_news ? { search_news } : {}),
                   category: "International",
@@ -134,7 +134,7 @@ export default async function LikedNews({ searchParams }) {
             </Link>
             <Link
               href={{
-                pathname: "/explore",
+                pathname: "/likes",
                 query: {
                   ...(search_news ? { search_news } : {}),
                   category: "Sport",
@@ -146,7 +146,7 @@ export default async function LikedNews({ searchParams }) {
             </Link>
             <Link
               href={{
-                pathname: "/explore",
+                pathname: "/likes",
                 query: {
                   ...(search_news ? { search_news } : {}),
                   category: "Economics",
@@ -158,7 +158,7 @@ export default async function LikedNews({ searchParams }) {
             </Link>
             <Link
               href={{
-                pathname: "/explore",
+                pathname: "/likes",
                 query: {
                   ...(search_news ? { search_news } : {}),
                   category: "Breaking",
