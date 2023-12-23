@@ -6,42 +6,52 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 
 async function getNews({ category, query }, userIdforLike) {
-  const response = await fetch(
-    `${process.env.NEXTAUTH_URL}/api/news/likes/${userIdforLike}?category=${category}&query=${query}`,
-    {
+  try {
+    const response = await fetch(
+      `${process.env.NEXTAUTH_URL}/api/news/likes/${userIdforLike}?category=${category}&query=${query}`,
+      {
+        next: {
+          revalidate: 0,
+        },
+        headers: {
+          "Content-Type": "application/json",
+          GET_NEWS_LIKES_API_KEY: process.env.NEWS_LIKES_API_KEY,
+        },
+      }
+    );
+    if (!response?.ok) {
+      const text = await response?.json();
+      return text;
+    }
+    const data = await response?.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching liked news:", error?.message);
+    return null;
+  }
+}
+
+async function getChannel() {
+  try {
+    const response = await fetch(`${process.env.NEXTAUTH_URL}/api/channel`, {
       next: {
         revalidate: 0,
       },
       headers: {
         "Content-Type": "application/json",
-        GET_NEWS_LIKES_API_KEY: process.env.NEWS_LIKES_API_KEY,
+        GET_CHANNEL_API_KEY: process.env.CHANNEL_API_KEY,
       },
+    });
+    if (!response?.ok) {
+      const text = await response?.json();
+      return text;
     }
-  );
-  if (!response?.ok) {
-    const text = await response?.json();
-    return text;
+    const data = await response?.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching channels:", error?.message);
+    return null;
   }
-  const data = await response?.json();
-  return data;
-}
-
-async function getChannel() {
-  const response = await fetch(`${process.env.NEXTAUTH_URL}/api/channel`, {
-    next: {
-      revalidate: 0,
-    },
-    headers: {
-      "Content-Type": "application/json",
-      GET_CHANNEL_API_KEY: process.env.CHANNEL_API_KEY,
-    },
-  });
-  if (!response?.ok) {
-    const text = await response?.json();
-    return text;
-  }
-  const data = await response?.json();
-  return data;
 }
 
 export default async function LikedNews({ searchParams }) {
@@ -168,7 +178,10 @@ export default async function LikedNews({ searchParams }) {
           <div className="w-full my-8 grid grid-cols-1 md:grid-cols-1 min-[900px]:grid-cols-2 min-[1200px]:grid-cols-3 min-[1750px]:grid-cols-4 gap-8">
             {news?.map((feature, index) => {
               return (
-                <div key={index} className="w-[100%] max-[900px]:flex max-[900px]:flex-col max-[900px]:items-center">
+                <div
+                  key={index}
+                  className="w-[100%] max-[900px]:flex max-[900px]:flex-col max-[900px]:items-center"
+                >
                   <Link
                     href={`/explore/${feature?._id}`}
                     className="cursor-pointer"

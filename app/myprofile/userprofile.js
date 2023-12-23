@@ -5,20 +5,28 @@ import { MdModeEditOutline } from "react-icons/md";
 import Link from "next/link";
 
 async function getUser(id) {
-  const response = await fetch(`${process.env.NEXTAUTH_URL}/api/users/${id}`, {
-    next: {
-      revalidate: 0,
-    },
-    headers: {
-      GET_USER_API_DETAIL_KEY: process.env.USER_DETAIL_API_KEY,
-    },
-  });
-  if (!response?.ok) {
-    const text = await response?.json();
-    return text;
+  try {
+    const response = await fetch(
+      `${process.env.NEXTAUTH_URL}/api/users/${id}`,
+      {
+        next: {
+          revalidate: 0,
+        },
+        headers: {
+          GET_USER_API_DETAIL_KEY: process.env.USER_DETAIL_API_KEY,
+        },
+      }
+    );
+    if (!response?.ok) {
+      const text = await response?.json();
+      return text;
+    }
+    const data = await response?.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching user's profile:", error?.message);
+    return null;
   }
-  const data = await response?.json();
-  return data;
 }
 
 export default async function UserProfile() {
@@ -39,7 +47,7 @@ export default async function UserProfile() {
         </div>
         <div className="w-full flex justify-center items-center">
           <Image
-            src={`/MediaFolders/UsersImg/${userDetail?.picture}`}
+            src={`${process.env.NEXTAUTH_URL}/MediaFolders/UsersImg/${userDetail?.picture}`}
             className="w-[200px] h-[200px] object-cover rounded-[50%] max-[500px]:w-[150px] max-[500px]:h-[150px]"
             alt="User Img"
             priority={true}

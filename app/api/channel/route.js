@@ -156,7 +156,6 @@ export async function GET(request) {
       } else {
         let allChannels;
         if (query !== "" && query !== null) {
-          console.log(query, "Object")
           allChannels = await Channel.find({
             name: { $regex: query, $options: "i" },
           });

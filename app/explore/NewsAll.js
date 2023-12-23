@@ -6,24 +6,29 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 
 async function getNews({ category, query }) {
-  const response = await fetch(
-    `${process.env.NEXTAUTH_URL}/api/news?category=${category}&query=${query}`,
-    {
-      next: {
-        revalidate: 0,
-      },
-      headers: {
-        "Content-Type": "application/json",
-        GET_NEWS_API_KEY: process.env.NEWS_API_KEY,
-      },
+  try {
+    const response = await fetch(
+      `${process.env.NEXTAUTH_URL}/api/news?category=${category}&query=${query}`,
+      {
+        next: {
+          revalidate: 0,
+        },
+        headers: {
+          "Content-Type": "application/json",
+          GET_NEWS_API_KEY: process.env.NEWS_API_KEY,
+        },
+      }
+    );
+    if (!response?.ok) {
+      const text = await response?.json();
+      return text;
     }
-  );
-  if (!response?.ok) {
-    const text = await response?.json();
-    return text;
+    const data = await response?.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching news:", error?.message);
+    return null;
   }
-  const data = await response?.json();
-  return data;
 }
 
 async function getChannel() {

@@ -1,10 +1,10 @@
+import mongoose from "mongoose";
 import News from "@/model/News.js";
+import Channel from "@/model/Channel";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import connectDB from "@/config/connectDB.js";
-import Channel from "@/app/home_page/channel";
 import { StatusCodes } from "http-status-codes";
-import mongoose from "mongoose";
 
 export async function GET(request, { params }) {
   try {
@@ -12,6 +12,7 @@ export async function GET(request, { params }) {
     const headerList = headers();
     const actualURLKEY = headerList.get("GET_NEWS_API_KEY");
     if (expectedURLKEY?.toString() === actualURLKEY?.toString()) {
+      await connectDB();
       const channelId = params?.channelId;
       if (!channelId || !mongoose.isValidObjectId(channelId)) {
         return NextResponse.json(
@@ -19,6 +20,14 @@ export async function GET(request, { params }) {
           { status: StatusCodes.BAD_REQUEST }
         );
       }
+      const findNewChannel = await Channel.findOne({ _id: channelId });
+      if (!findNewChannel) {
+        return NextResponse.json(
+          { Message: "Channel not found." },
+          { status: StatusCodes.NOT_FOUND }
+        );
+      }
+
       const findChannelNews = await News.find({ channel: channelId });
       if (!findChannelNews) {
         return NextResponse.json(

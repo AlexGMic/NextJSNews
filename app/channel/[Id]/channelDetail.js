@@ -6,25 +6,30 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import Link from "next/link";
 
 async function getChannelDetail(id) {
-  const response = await fetch(
-    `${process.env.NEXTAUTH_URL}/api/channel/${id}`,
-    {
-      next: {
-        revalidate: 0,
-      },
-      headers: {
-        "Content-Type": "application/json",
-        GET_CHANNEL_DETAIL_API_KEY: process.env.CHANNEL_DETAIL_API_KEY,
-      },
-    }
-  );
+  try {
+    const response = await fetch(
+      `${process.env.NEXTAUTH_URL}/api/channel/${id}`,
+      {
+        next: {
+          revalidate: 0,
+        },
+        headers: {
+          "Content-Type": "application/json",
+          GET_CHANNEL_DETAIL_API_KEY: process.env.CHANNEL_DETAIL_API_KEY,
+        },
+      }
+    );
 
-  if (!response?.ok) {
-    const text = await response?.json();
-    return text;
+    if (!response?.ok) {
+      const text = await response?.json();
+      return text;
+    }
+    const data = await response?.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching channels:", error?.message);
+    return null;
   }
-  const data = await response?.json();
-  return data;
 }
 
 async function getChannelNews(id, userId) {

@@ -3,30 +3,34 @@ import SearchChannel from "./searchchannel";
 import { getServerSession } from "next-auth";
 import { MdMyLocation } from "react-icons/md";
 import { authOptions } from "../api/auth/[...nextauth]/route";
-import HamburgerMenu from "./hamburger";
 
 async function getPicture() {
-  const session = await getServerSession(authOptions);
-  const userId = session?.user?.id;
+  try {
+    const session = await getServerSession(authOptions);
+    const userId = session?.user?.id;
 
-  const response = await fetch(
-    `${process.env.NEXTAUTH_URL}/api/users/${userId}`,
-    {
-      next: {
-        revalidate: 0,
-      },
-      headers: {
-        "Content-Type": "application/json",
-        GET_USER_API_DETAIL_KEY: process.env.USER_DETAIL_API_KEY,
-      },
+    const response = await fetch(
+      `${process.env.NEXTAUTH_URL}/api/users/${userId}`,
+      {
+        next: {
+          revalidate: 0,
+        },
+        headers: {
+          "Content-Type": "application/json",
+          GET_USER_API_DETAIL_KEY: process.env.USER_DETAIL_API_KEY,
+        },
+      }
+    );
+    if (!response?.ok) {
+      const text = await response?.json();
+      return text;
     }
-  );
-  if (!response?.ok) {
-    const text = await response?.json();
-    return text;
+    const data = await response?.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching profile picture:", error?.message);
+    return null;
   }
-  const data = await response?.json();
-  return data;
 }
 
 export default async function Navbar() {
@@ -54,7 +58,7 @@ export default async function Navbar() {
               </div>
             ) : (
               <Image
-                src={`/MediaFolders/UsersImg/${userDetail?.picture}`}
+                src={`${process.env.NEXTAUTH_URL}/MediaFolders/UsersImg/${userDetail?.picture}`}
                 className="w-[100%] h-[100%] object-cover rounded-full"
                 alt="User Img"
                 priority={true}

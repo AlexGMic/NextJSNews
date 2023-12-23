@@ -20,7 +20,7 @@
     "react": "latest",
     "react-dom": "latest",
     "react-icons": "^4.12.0",
-    "react-tooltip": "^5.25.0",
+    "sharp": "^0.33.1",
     "use-debounce": "^10.0.0"
   },
   "devDependencies": {

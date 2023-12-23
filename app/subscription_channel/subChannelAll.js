@@ -4,25 +4,30 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 
 async function getChannel({ query }, userId) {
-  const response = await fetch(
-    `${process.env.NEXTAUTH_URL}/api/channel/get_subchannel_by_user/${userId}?query=${query}`,
-    {
-      next: {
-        revalidate: 0,
-      },
-      headers: {
-        "Content-Type": "application/json",
-        GET_CHANNEL_API_KEY: process.env.CHANNEL_API_KEY,
-      },
+  try {
+    const response = await fetch(
+      `${process.env.NEXTAUTH_URL}/api/channel/get_subchannel_by_user/${userId}?query=${query}`,
+      {
+        next: {
+          revalidate: 0,
+        },
+        headers: {
+          "Content-Type": "application/json",
+          GET_CHANNEL_API_KEY: process.env.CHANNEL_API_KEY,
+        },
+      }
+    );
+    if (!response?.ok) {
+      const text = await response?.json();
+      return text;
     }
-  );
-  if (!response?.ok) {
-    const text = await response?.json();
-    return text;
+  
+    const data = await response?.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching subscribed channels:", error?.message);
+    return null;
   }
-
-  const data = await response?.json();
-  return data;
 }
 
 export default async function SubChannelAll({ searchParams }) {

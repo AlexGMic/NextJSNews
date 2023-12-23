@@ -214,6 +214,8 @@ export async function PUT(request, { params }) {
             uniqueSuffix + "-" + picture?.name
           );
 
+          console.log("New Path: ", newPath)
+
           const picName = uniqueSuffix + "-" + picture?.name;
 
           await writeFile(newPath, buffer);

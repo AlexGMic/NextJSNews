@@ -1,7 +1,7 @@
 import './globals.css'
 import { Raleway } from 'next/font/google'
 
-const inter = Raleway({ subsets: ['latin'] })
+const inter = Raleway({ subsets: ['latin'], display:'swap' })
 
 export const metadata = {
   title: 'Abyssinia News',

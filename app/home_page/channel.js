@@ -3,24 +3,29 @@ import Image from "next/image";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 
 async function getChannel({ page, pageSize, query }) {
-  const response = await fetch(
-    `${process.env.NEXTAUTH_URL}/api/channel?page=${page}&pageSize=${pageSize}&query=${query}`,
-    {
-      next: {
-        revalidate: 0,
-      },
-      headers: {
-        "Content-Type": "application/json",
-        GET_CHANNEL_API_KEY: process.env.CHANNEL_API_KEY,
-      },
+  try {
+    const response = await fetch(
+      `${process.env.NEXTAUTH_URL}/api/channel?page=${page}&pageSize=${pageSize}&query=${query}`,
+      {
+        next: {
+          revalidate: 0,
+        },
+        headers: {
+          "Content-Type": "application/json",
+          GET_CHANNEL_API_KEY: process.env.CHANNEL_API_KEY,
+        },
+      }
+    );
+    if (!response?.ok) {
+      const text = await response?.json();
+      return text;
     }
-  );
-  if (!response?.ok) {
-    const text = await response?.json();
-    return text;
+    const data = await response?.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching channels:", error?.message);
+    return null;
   }
-  const data = await response?.json();
-  return data;
 }
 
 export default async function Channel({ searchParams }) {

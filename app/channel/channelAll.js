@@ -2,24 +2,29 @@ import Link from "next/link";
 import Image from "next/image";
 
 async function getChannel({ query }) {
-  const response = await fetch(
-    `${process.env.NEXTAUTH_URL}/api/channel?query=${query}`,
-    {
-      next: {
-        revalidate: 0,
-      },
-      headers: {
-        "Content-Type": "application/json",
-        GET_CHANNEL_API_KEY: process.env.CHANNEL_API_KEY,
-      },
+  try {
+    const response = await fetch(
+      `${process.env.NEXTAUTH_URL}/api/channel?query=${query}`,
+      {
+        next: {
+          revalidate: 0,
+        },
+        headers: {
+          "Content-Type": "application/json",
+          GET_CHANNEL_API_KEY: process.env.CHANNEL_API_KEY,
+        },
+      }
+    );
+    if (!response?.ok) {
+      const text = await response?.json();
+      return text;
     }
-  );
-  if (!response?.ok) {
-    const text = await response?.json();
-    return text;
+    const data = await response?.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching channels:", error?.message);
+    return null;
   }
-  const data = await response?.json();
-  return data;
 }
 
 export default async function ChannelAll({ searchParams }) {
@@ -30,13 +35,15 @@ export default async function ChannelAll({ searchParams }) {
     query: search,
   });
 
-  const channels = channelsInfo
+  const channels = channelsInfo;
 
   return (
     <div className="w-[95%] mt-[30px] mx-auto">
       <div className="w-[100%]">
         <div className="flex justify-between items-center gap-4">
-          <span className="text-[20px] text-[#0D5C63] font-bold max-[420px]:text-[18px]">Channels</span>
+          <span className="text-[20px] text-[#0D5C63] font-bold max-[420px]:text-[18px]">
+            Channels
+          </span>
         </div>
         {channelsInfo?.Message ? (
           <div className="w-full my-2 text-red-600 text-center font-medium">
