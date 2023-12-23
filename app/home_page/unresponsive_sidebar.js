@@ -31,41 +31,41 @@ export default function UnResponsiveSidebar() {
         <div className="flex  min-h-[90vh] flex-col justify-between">
           <div>
             <div className="w-[100%]  text-[#878787] mt-[50px] flex flex-col gap-[20px]">
-              <Link
+              <a
                 href="/"
                 className="flex items-center gap-[10px]  p-2 rounded-[10px] duration-700 hover:bg-[#0D5C63] hover:text-white"
               >
                 <LiaHomeSolid className="text-[25px] max-[1700px]:text-[18px]" />
                 <span>Home</span>
-              </Link>
-              <Link
+              </a>
+              <a
                 href="/explore"
                 className="flex items-center gap-[10px] p-2 rounded-[10px] duration-700 hover:bg-[#0D5C63] hover:text-white"
               >
                 <LiaWpexplorer className="text-[25px] max-[1700px]:text-[18px]" />
                 <span>Explore</span>
-              </Link>
-              <Link
+              </a>
+              <a
                 href="/likes"
                 className="flex items-center gap-[10px] p-2 rounded-[10px] duration-700 hover:bg-[#0D5C63] hover:text-white"
               >
                 <SlLike className="text-[25px] max-[1700px]:text-[18px]" />
                 <span>Liked</span>
-              </Link>
-              <Link
+              </a>
+              <a
                 href="/channel"
                 className="flex items-center gap-[10px] p-2 rounded-[10px] duration-700 hover:bg-[#0D5C63] hover:text-white"
               >
                 <GrChannel className="text-[25px] max-[1700px]:text-[18px]" />
                 <span>Channels</span>
-              </Link>
-              <Link
+              </a>
+              <a
                 href="/subscription_channel"
                 className="flex items-center gap-[10px] p-2 rounded-[10px] duration-700 hover:bg-[#0D5C63] hover:text-white"
               >
                 <PiRadioLight className="text-[25px] max-[1700px]:text-[18px]" />
                 <span>Subscribed Channels</span>
-              </Link>
+              </a>
             </div>
           </div>
           <div className="text-[#878787] flex flex-col gap-[20px]">

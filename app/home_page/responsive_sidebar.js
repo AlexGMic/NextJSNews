@@ -29,41 +29,41 @@ export default function ResponsiveSidebar() {
         <div className="flex  min-h-[90vh] flex-col justify-between">
           <div>
             <div className="w-[100%]  text-[#878787] mt-[50px] flex flex-col gap-[20px]">
-              <Link
+              <a
                 href="/"
                 title="Home"
                 className="flex justify-center items-center gap-[10px]  p-2 rounded-[10px] duration-700 hover:bg-[#0D5C63] hover:text-white"
               >
                 <LiaHomeSolid className="text-[22px]" />
-              </Link>
-              <Link
+              </a>
+              <a
                 href="/explore"
                 title="Explore"
                 className="flex justify-center items-center gap-[10px] p-2 rounded-[10px] duration-700 hover:bg-[#0D5C63] hover:text-white"
               >
                 <LiaWpexplorer className="text-[22px]" />
-              </Link>
-              <Link
+              </a>
+              <a
                 href="/likes"
                 title="Liked"
                 className="flex justify-center items-center gap-[10px] p-2 rounded-[10px] duration-700 hover:bg-[#0D5C63] hover:text-white"
               >
                 <SlLike className="text-[22px]" />
-              </Link>
-              <Link
+              </a>
+              <a
                 href="/channel"
                 title="Channels"
                 className="flex justify-center items-center gap-[10px] p-2 rounded-[10px] duration-700 hover:bg-[#0D5C63] hover:text-white"
               >
                 <GrChannel className="text-[22px]" />
-              </Link>
-              <Link
+              </a>
+              <a
                 href="/subscription_channel"
                 title="Subscribed Channels"
                 className="flex justify-center items-center gap-[10px] p-2 rounded-[10px] duration-700 hover:bg-[#0D5C63] hover:text-white"
               >
                 <PiRadioLight className="text-[22px]" />
-              </Link>
+              </a>
             </div>
           </div>
           <div className="text-[#878787] flex flex-col gap-[20px]">
