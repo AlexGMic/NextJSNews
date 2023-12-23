@@ -3,9 +3,9 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: "http",
-        hostname: "localhost",
-        port: "3000",
+        protocol: "https",
+        hostname: "abyssinia-news.vercel.app",
+        port: "",
         pathname: "/MediaFolders/**",
       },
     ],
