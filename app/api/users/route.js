@@ -10,7 +10,6 @@ import { StatusCodes } from "http-status-codes";
 export async function POST(request) {
   try {
     const expectedURLKEY = process.env.USER_API_KEY;
-
     const headerList = headers();
     const actualURLKEY = headerList.get("GET_USER_API_KEY");
     if (expectedURLKEY?.toString() === actualURLKEY?.toString()) {
