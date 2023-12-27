@@ -31,7 +31,7 @@ export default function EditProfile() {
           setLastName(response?.data?.last_name);
           setUsernameFill(response?.data?.username);
           setEmailFill(response?.data?.email);
-          setPictureFill(response?.data?.picture);
+          setPictureFill(response?.data?.picture?.public_id);
         }
       })
       .catch((error) => {

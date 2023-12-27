@@ -1,10 +1,9 @@
-import { join } from "path";
 import News from "@/model/News.js";
 import mongoose from "mongoose";
 import Channel from "@/model/Channel";
 import { headers } from "next/headers";
-import { writeFile } from "fs/promises";
 import { NextResponse } from "next/server";
+import cloudinary from "@/config/cloudinary";
 import connectDB from "@/config/connectDB.js";
 import { StatusCodes } from "http-status-codes";
 
@@ -90,28 +89,34 @@ export async function POST(request) {
         );
       }
 
-      const bytes = await image.arrayBuffer();
+      const bytes = await image?.arrayBuffer();
       const buffer = Buffer.from(bytes);
-      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+      const base64String = buffer.toString("base64");
 
-      const path = join(
-        "./",
-        "public",
-        "MediaFolders",
-        "ChannelLogo",
-        uniqueSuffix + "-" + image?.name
+      const result = await cloudinary?.uploader?.upload(
+        `data:image/png;base64,${base64String}`,
+        {
+          folder: "NewsImageNew",
+        },
+        (error, result) => {
+          if (error) {
+            return NextResponse.json(
+              { Message: "Error adding new image." },
+              { status: StatusCodes.CONFLICT }
+            );
+          }
+        }
       );
-
-      const imageName = uniqueSuffix + "-" + image?.name;
-
-      await writeFile(path, buffer);
 
       await News.create({
         title,
         content,
         channel,
         category,
-        image: imageName,
+        image: {
+          public_id: result?.public_id,
+          url: result?.secure_url,
+        },
       });
 
       return NextResponse.json(
@@ -142,7 +147,12 @@ export async function GET(request) {
 
       let findNews;
 
-      if (category !== null && category !== "" && query !== null && query !== "") {
+      if (
+        category !== null &&
+        category !== "" &&
+        query !== null &&
+        query !== ""
+      ) {
         findNews = await News.find({
           category: category,
           $or: [
@@ -150,24 +160,18 @@ export async function GET(request) {
             { content: { $regex: query, $options: "i" } },
           ],
         }).sort({ _id: -1 });
-      }
-
-      else if (category !== "" && category !== null) {
+      } else if (category !== "" && category !== null) {
         findNews = await News.find({
           category: category,
         }).sort({ _id: -1 });
-      }
-
-      else if (query !== "" && query !== null) {
+      } else if (query !== "" && query !== null) {
         findNews = await News.find({
           $or: [
             { title: { $regex: query, $options: "i" } },
             { content: { $regex: query, $options: "i" } },
           ],
         }).sort({ _id: -1 });
-      }
-
-      else{
+      } else {
         findNews = await News.find().sort({ _id: -1 });
       }
 
@@ -184,7 +188,7 @@ export async function GET(request) {
     }
   } catch (error) {
     return NextResponse.json(
-      { Message: "Network error "+error?.message },
+      { Message: "Network error " + error?.message },
       { status: StatusCodes.INTERNAL_SERVER_ERROR }
     );
   }

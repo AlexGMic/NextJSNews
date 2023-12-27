@@ -94,7 +94,7 @@ export default async function ChannelDetail({ params }) {
         <div className="flex items-center gap-[50px] max-[1200px]:flex-col">
           <div className="rounded-full">
             <Image
-              src={`/MediaFolders/ChannelLogo/${channelList?.logo}`}
+              src={`${channelList?.logo?.url}`}
               className="w-[200px] h-[200px] object-contain rounded-full"
               priority={true}
               alt="Channel Logo"
@@ -136,7 +136,7 @@ export default async function ChannelDetail({ params }) {
                       className="cursor-pointer"
                     >
                       <Image
-                        src={`/MediaFolders/ChannelLogo/${feature?.image}`}
+                        src={`${feature?.image?.url}`}
                         priority={true}
                         width={500}
                         height={500}

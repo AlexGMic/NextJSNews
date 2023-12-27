@@ -35,13 +35,10 @@ async function getPicture() {
 
 export default async function Navbar() {
   const userDetail = await getPicture();
+
   return (
     <div className="relative w-[100%] h-[100px]">
       <div className="w-[95%] h-[100%] mx-auto flex justify-between items-center gap-[20px]">
-        {/* <div className="flex items-center gap-[20px]">
-          <HamburgerMenu />
-          <span>News</span>
-        </div> */}
         <div className="flex items-center gap-[20px] max-[800px]:hidden">
           <MdMyLocation className="text-[30px] text-[#0D5C63]" />
           <span className="font-semibold text-[14px]">
@@ -58,7 +55,7 @@ export default async function Navbar() {
               </div>
             ) : (
               <Image
-                src={`${process.env.NEXTAUTH_URL}/MediaFolders/UsersImg/${userDetail?.picture}`}
+                src={userDetail?.picture?.url}
                 className="w-[100%] h-[100%] object-cover rounded-full"
                 alt="User Img"
                 priority={true}

@@ -1,11 +1,9 @@
-import { join } from "path";
 import mongoose from "mongoose";
 import User from "@/model/User";
-import { unlink } from "fs/promises";
 import { headers } from "next/headers";
-import { writeFile } from "fs/promises";
-import connectDB from "@/config/connectDB.js";
 import { NextResponse } from "next/server";
+import cloudinary from "@/config/cloudinary";
+import connectDB from "@/config/connectDB.js";
 import { StatusCodes } from "http-status-codes";
 
 export async function GET(request, { params }) {
@@ -70,19 +68,31 @@ export async function DELETE(request, { params }) {
         );
       }
 
-      const path = join(
-        "./",
-        "public",
-        "MediaFolders",
-        "UsersImg",
-        findUser?.picture
-      );
+      const existingPublicId = findUser?.picture?.public_id;
 
-      try {
-        await unlink(path);
-      } catch (unlinkError) {
+      if (!existingPublicId) {
         return NextResponse.json(
-          { Message: "Image path not found." },
+          { Message: "User image not found." },
+          { status: StatusCodes.NOT_FOUND }
+        );
+      }
+      const deletionResult = await cloudinary?.uploader?.destroy(
+        existingPublicId,
+        {
+          folder: "UsersImage",
+        },
+        (error, result) => {
+          if (error) {
+            return NextResponse.json(
+              { Message: "Error removing user image." },
+              { status: StatusCodes.CONFLICT }
+            );
+          }
+        }
+      );
+      if (deletionResult?.result !== "ok") {
+        return NextResponse.json(
+          { Message: "Error removing the user image." },
           { status: StatusCodes.NOT_FOUND }
         );
       }
@@ -203,41 +213,56 @@ export async function PUT(request, { params }) {
           }
           const bytes = await picture?.arrayBuffer();
           const buffer = Buffer?.from(bytes);
-          const uniqueSuffix =
-            Date.now() + "-" + Math.round(Math.random() * 1e9);
+          const base64String = buffer.toString("base64");
 
-          const newPath = join(
-            "./",
-            "public",
-            "MediaFolders",
-            "UsersImg",
-            uniqueSuffix + "-" + picture?.name
-          );
+          const existingPublicId = findUser?.picture?.public_id;
 
-          // console.log("New Path: ", newPath)
-
-          const picName = uniqueSuffix + "-" + picture?.name;
-
-          await writeFile(newPath, buffer);
-
-          updateFields.picture = picture ? picName : findUser.picture;
-
-          const path = join(
-            "./",
-            "public",
-            "MediaFolders",
-            "UsersImg",
-            findUser?.picture
-          );
-
-          try {
-            await unlink(path);
-          } catch (unlinkError) {
+          if (!existingPublicId) {
             return NextResponse.json(
-              { Message: "Image not found." },
+              { Message: "User image not found." },
               { status: StatusCodes.NOT_FOUND }
             );
           }
+          const deletionResult = await cloudinary?.uploader?.destroy(
+            existingPublicId,
+            {
+              folder: "UsersImage",
+            },
+            (error, result) => {
+              if (error) {
+                return NextResponse.json(
+                  { Message: "Error removing user image." },
+                  { status: StatusCodes.CONFLICT }
+                );
+              }
+            }
+          );
+          if (deletionResult?.result !== "ok") {
+            return NextResponse.json(
+              { Message: "Error removing the user image." },
+              { status: StatusCodes.NOT_FOUND }
+            );
+          }
+
+          const newResult = await cloudinary?.uploader?.upload(
+            `data:image/png;base64,${base64String}`,
+            {
+              folder: "UsersImage",
+            },
+            (error, result) => {
+              if (error) {
+                return NextResponse.json(
+                  { Message: "Error adding new user image." },
+                  { status: StatusCodes.CONFLICT }
+                );
+              }
+            }
+          );
+
+          updateFields.picture = {};
+
+          updateFields.picture.public_id = newResult?.public_id;
+          updateFields.picture.url = newResult?.secure_url;
         } else if (typeof picture === "string") {
           const findPicture = await User.findOne({ picture: picture });
           if (findPicture) {
@@ -245,7 +270,10 @@ export async function PUT(request, { params }) {
           }
         } else {
           return NextResponse.json(
-            { Message: "Invalid format please try again. Only accepts '.jpeg', '.jpg', or '.png'." },
+            {
+              Message:
+                "Invalid format please try again. Only accepts '.jpeg', '.jpg', or '.png'.",
+            },
             { status: StatusCodes.BAD_REQUEST }
           );
         }

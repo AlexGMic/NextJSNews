@@ -1,9 +1,8 @@
-import { join } from "path";
 import Channel from "@/model/Channel";
 import { headers } from "next/headers";
-import { writeFile } from "fs/promises";
-import connectDB from "@/config/connectDB.js";
 import { NextResponse } from "next/server";
+import connectDB from "@/config/connectDB.js";
+import cloudinary from "@/config/cloudinary";
 import { StatusCodes } from "http-status-codes";
 
 export async function POST(request) {
@@ -56,24 +55,30 @@ export async function POST(request) {
 
       const bytes = await logo?.arrayBuffer();
       const buffer = Buffer.from(bytes);
-      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+      const base64String = buffer.toString("base64");
 
-      const path = join(
-        "./",
-        "public",
-        "MediaFolders",
-        "ChannelLogo",
-        uniqueSuffix + "-" + logo?.name
+      const result = await cloudinary?.uploader?.upload(
+        `data:image/png;base64,${base64String}`,
+        {
+          folder: "ChannelsImage",
+        },
+        (error, result) => {
+          if (error) {
+            return NextResponse.json(
+              { Message: "Error adding new channel logo." },
+              { status: StatusCodes.CONFLICT }
+            );
+          }
+        }
       );
-
-      const logoName = uniqueSuffix + "-" + logo?.name;
-
-      await writeFile(path, buffer);
 
       const createChannel = await Channel.create({
         name: checkName,
         code_name: checkCodeName,
-        logo: logoName,
+        logo: {
+          public_id: result?.public_id,
+          url: result?.secure_url,
+        },
       });
 
       return NextResponse.json(
@@ -182,79 +187,3 @@ export async function GET(request) {
     );
   }
 }
-
-// export async function GET(request) {
-//   try {
-//     const expectedURLKEY = process.env.CHANNEL_API_KEY;
-//     const headerList = headers();
-//     const actualURLKEY = headerList?.get("GET_CHANNEL_API_KEY");
-
-//     if (expectedURLKEY?.toString() === actualURLKEY?.toString()) {
-//       await connectDB();
-
-//       const { searchParams } = new URL(request?.url);
-//       const pageNum = searchParams?.get("page");
-//       const pageSizeParam = searchParams?.get("pageSize");
-
-//       if (pageNum !== null || pageSizeParam !== null) {
-//         let pageSize = parseInt(pageSizeParam) || 5;
-//         const page = parseInt(pageNum) || 1;
-
-//         if (page <= 0 || pageSize <= 0) {
-//           return NextResponse.json(
-//             { Message: "Invalid page or pageSize parameters." },
-//             { status: StatusCodes.BAD_REQUEST }
-//           );
-//         }
-
-//         let findChannel;
-//         const totalChannels = await Channel.countDocuments();
-
-//         if (pageSize > totalChannels) {
-//           pageSize = totalChannels;
-//         }
-
-//         const skip = (page - 1) * pageSize;
-
-//         if (skip >= totalChannels) {
-//           return NextResponse.json(
-//             { Message: `Page ${page} not available.` },
-//             { status: StatusCodes.NOT_FOUND }
-//           );
-//         }
-
-//         findChannel = await Channel.find().skip(skip).limit(pageSize);
-
-//         if (!findChannel || findChannel.length === 0) {
-//           return NextResponse.json(
-//             { Message: "No channels found." },
-//             { status: StatusCodes.NO_CONTENT }
-//           );
-//         }
-
-//         const totalPages = Math.ceil(totalChannels / pageSize);
-
-//         return NextResponse.json({findChannel, pagination: { currentPage: page, totalPages }} ,{ status: StatusCodes.OK });
-//       } else {
-//         const allChannels = await Channel.find();
-
-//         if (!allChannels || allChannels.length === 0) {
-//           return NextResponse.json(
-//             { Message: "No channels found." },
-//             { status: StatusCodes.NO_CONTENT }
-//           );
-//         }
-
-//         return NextResponse.json(allChannels, { status: StatusCodes.OK });
-//       }
-//     } else {
-//       const redirectUrl = new URL("/not-found", request.url);
-//       return NextResponse.redirect(redirectUrl);
-//     }
-//   } catch (error) {
-//     return NextResponse.json(
-//       { Message: "Network error " + error?.message },
-//       { status: StatusCodes.INTERNAL_SERVER_ERROR }
-//     );
-//   }
-// }

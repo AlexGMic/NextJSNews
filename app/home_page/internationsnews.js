@@ -95,7 +95,7 @@ export default async function InternationalNews() {
               >
                 <Link href={`/explore/${news?._id}`}>
                   <Image
-                    src={`/MediaFolders/ChannelLogo/${news?.image}`}
+                    src={`${news?.image?.url}`}
                     className="w-[150px] h-[150px] object-cover rounded-lg max-[380px]:w-[130px] max-[380px]:h-[130px]"
                     priority={true}
                     alt="News Image"

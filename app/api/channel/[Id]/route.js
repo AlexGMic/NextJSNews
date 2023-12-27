@@ -1,11 +1,9 @@
-import { join } from "path";
 import mongoose from "mongoose";
-import { unlink } from "fs/promises";
 import Channel from "@/model/Channel";
 import { headers } from "next/headers";
-import { writeFile } from "fs/promises";
-import connectDB from "@/config/connectDB.js";
 import { NextResponse } from "next/server";
+import cloudinary from "@/config/cloudinary";
+import connectDB from "@/config/connectDB.js";
 import { StatusCodes } from "http-status-codes";
 
 export async function GET(request, { params }) {
@@ -66,28 +64,43 @@ export async function DELETE(request, { params }) {
         );
       }
 
-      const path = join(
-        "./",
-        "public",
-        "MediaFolders",
-        "ChannelLogo",
-        findChannel?.logo
-      );
+      const existingPublicId = findChannel?.logo?.public_id;
 
-      try {
-        await unlink(path);
-      } catch (unlinkError) {
+      if (!existingPublicId) {
         return NextResponse.json(
-          { Message: "Image not found." },
+          { Message: "Logo not found." },
+          { status: StatusCodes.NOT_FOUND }
+        );
+      }
+      const deletionResult = await cloudinary?.uploader?.destroy(
+        existingPublicId,
+        {
+          folder: "ChannelsImage",
+        },
+        (error, result) => {
+          if (error) {
+            return NextResponse.json(
+              { Message: "Error removing logo." },
+              { status: StatusCodes.CONFLICT }
+            );
+          }
+        }
+      );
+      if (deletionResult?.result !== "ok") {
+        return NextResponse.json(
+          { Message: "Error removing the logo." },
           { status: StatusCodes.NOT_FOUND }
         );
       }
 
       await findChannel.deleteOne({ _id: id });
 
-      return NextResponse.json({
-        Message: `${findChannel?.name?.toUpperCase()} is deleted successfully.`,
-      });
+      return NextResponse.json(
+        {
+          Message: `${findChannel?.name?.toUpperCase()} is deleted successfully.`,
+        },
+        { status: StatusCodes.OK }
+      );
     } else {
       const redirectUrl = new URL("/not-found", request.url);
       return NextResponse.redirect(redirectUrl);
@@ -162,40 +175,83 @@ export async function PUT(request, { params }) {
       }
 
       if (logo) {
-        const path = join(
-          "./",
-          "public",
-          "MediaFolders",
-          "ChannelLogo",
-          findChannel?.logo
-        );
-
-        try {
-          await unlink(path);
-        } catch (unlinkError) {
+        if (
+          typeof logo === "object" &&
+          (logo?.type === "image/jpeg" ||
+            logo?.type === "image/jpg" ||
+            logo?.type === "image/png")
+        ) {
+          if (logo?.size > 1024 * 1024) {
+            return NextResponse.json(
+              {
+                Message:
+                  "Logo size is too large. Please insert an logo less than 1MB.",
+              },
+              { status: StatusCodes.BAD_REQUEST }
+            );
+          }
+        } else {
           return NextResponse.json(
-            { Message: "Image not found." },
+            {
+              Message:
+                "Invalid format please try again. Only accepts '.jpeg', '.jpg', or '.png'.",
+            },
+            { status: StatusCodes.BAD_REQUEST }
+          );
+        }
+
+        const bytes = await logo?.arrayBuffer();
+        const buffer = Buffer.from(bytes);
+        const base64String = buffer.toString("base64");
+
+        const existingPublicId = findChannel?.logo?.public_id;
+
+        if (!existingPublicId) {
+          return NextResponse.json(
+            { Message: "Logo not found." },
+            { status: StatusCodes.NOT_FOUND }
+          );
+        }
+        const deletionResult = await cloudinary?.uploader?.destroy(
+          existingPublicId,
+          {
+            folder: "ChannelsImage",
+          },
+          (error, result) => {
+            if (error) {
+              return NextResponse.json(
+                { Message: "Error removing logo." },
+                { status: StatusCodes.CONFLICT }
+              );
+            }
+          }
+        );
+        if (deletionResult?.result !== "ok") {
+          return NextResponse.json(
+            { Message: "Error removing the logo." },
             { status: StatusCodes.NOT_FOUND }
           );
         }
 
-        const bytes = await logo.arrayBuffer();
-        const buffer = Buffer.from(bytes);
-        const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-
-        const newPath = join(
-          "./",
-          "public",
-          "MediaFolders",
-          "ChannelLogo",
-          uniqueSuffix + "-" + logo?.name
+        const newResult = await cloudinary?.uploader?.upload(
+          `data:image/png;base64,${base64String}`,
+          {
+            folder: "ChannelsImage",
+          },
+          (error, result) => {
+            if (error) {
+              return NextResponse.json(
+                { Message: "Error adding new channel logo." },
+                { status: StatusCodes.CONFLICT }
+              );
+            }
+          }
         );
 
-        const logoName = uniqueSuffix + "-" + logo?.name;
+        updatedFields.image = {};
 
-        await writeFile(newPath, buffer);
-
-        updatedFields.logo = logo ? logoName : findChannel?.logo;
+        updatedFields.image.public_id = newResult?.public_id;
+        updatedFields.image.url = newResult?.secure_url;
       }
 
       if (status !== "active" && status !== "inactive") {

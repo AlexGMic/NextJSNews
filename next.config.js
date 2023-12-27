@@ -4,9 +4,9 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "mineabyssinianews.netlify.app",
+        hostname: "res.cloudinary.com",
         port: "",
-        pathname: "/MediaFolders/**",
+        pathname: "/dc17hqknj/image/upload/**",
       },
     ],
   },

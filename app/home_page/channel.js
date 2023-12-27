@@ -99,7 +99,7 @@ export default async function Channel({ searchParams }) {
                   className="bg-[#F7F7F7] rounded-[10px] p-4 flex flex-col items-center justify-center gap-[20px] shadow-md cursor-pointer"
                 >
                   <Image
-                    src={`/MediaFolders/ChannelLogo/${channel?.logo}`}
+                    src={`${channel?.logo?.url}`}
                     className="w-[80px] h-[80px] object-contain rounded-full max-[1300px]:w-[60px] max-[1300px]:h-[60px]"
                     priority={true}
                     alt="Channel Logo"

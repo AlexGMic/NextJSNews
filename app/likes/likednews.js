@@ -187,7 +187,7 @@ export default async function LikedNews({ searchParams }) {
                     className="cursor-pointer"
                   >
                     <Image
-                      src={`/MediaFolders/ChannelLogo/${feature?.image}`}
+                      src={`${feature?.image?.url}`}
                       className="w-[300px] h-[200px] object-cover rounded-[20px] max-[410px]:w-[280px] max-[410px]:h-[200px]"
                       alt="News Image"
                       priority={true}

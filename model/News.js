@@ -31,8 +31,14 @@ const newsSchema = Schema({
     required: true,
   },
   image: {
-    type: String,
-    required: true,
+    public_id: {
+      type: String,
+      required: true,
+    },
+    url: {
+      type: String,
+      required: true,
+    },
   },
   views: {
     type: Number,
@@ -67,7 +73,7 @@ const newsSchema = Schema({
       text: String,
       date: {
         type: Date,
-        default: Date.now
+        default: Date.now,
       },
     },
   ],

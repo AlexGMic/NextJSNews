@@ -1,10 +1,9 @@
-import { join } from "path";
 import { hash } from "bcrypt";
 import User from "@/model/User";
 import { headers } from "next/headers";
-import { writeFile } from "fs/promises";
-import connectDB from "@/config/connectDB.js";
 import { NextResponse } from "next/server";
+import cloudinary from "@/config/cloudinary";
+import connectDB from "@/config/connectDB.js";
 import { StatusCodes } from "http-status-codes";
 
 export async function POST(request) {
@@ -124,19 +123,22 @@ export async function POST(request) {
 
       const bytes = await picture?.arrayBuffer();
       const buffer = Buffer.from(bytes);
-      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+      const base64String = buffer.toString("base64");
 
-      const path = join(
-        "./",
-        "public",
-        "MediaFolders",
-        "UsersImg",
-        uniqueSuffix + "-" + picture?.name
+      const result = await cloudinary?.uploader?.upload(
+        `data:image/png;base64,${base64String}`,
+        {
+          folder: "UsersImage",
+        },
+        (error, result) => {
+          if (error) {
+            return NextResponse.json(
+              { Message: "Error adding new user." },
+              { status: StatusCodes.CONFLICT }
+            );
+          }
+        }
       );
-
-      const picName = uniqueSuffix + "-" + picture?.name;
-
-      await writeFile(path, buffer);
 
       const hashedPwd = await hash(password, 10);
 
@@ -148,7 +150,10 @@ export async function POST(request) {
         email,
         password: hashedPwd,
         role,
-        picture: picName,
+        picture: {
+          public_id: result?.public_id,
+          url: result?.secure_url,
+        },
       });
 
       return NextResponse.json(

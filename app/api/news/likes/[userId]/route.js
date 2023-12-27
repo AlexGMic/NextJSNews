@@ -76,7 +76,7 @@ export async function GET(request, { params }) {
 
       if (!findNews || findNews?.length === 0) {
         return NextResponse.json(
-          { Message: "News not found." },
+          { Message: "No News liked by the user." },
           { status: StatusCodes.NOT_FOUND }
         );
       }

@@ -47,7 +47,7 @@ export default async function UserProfile() {
         </div>
         <div className="w-full flex justify-center items-center">
           <Image
-            src={`${process.env.NEXTAUTH_URL}/MediaFolders/UsersImg/${userDetail?.picture}`}
+            src={`${userDetail?.picture?.url}`}
             className="w-[200px] h-[200px] object-cover rounded-[50%] max-[500px]:w-[150px] max-[500px]:h-[150px]"
             alt="User Img"
             priority={true}

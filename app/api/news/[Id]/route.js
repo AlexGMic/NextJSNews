@@ -6,6 +6,7 @@ import Channel from "@/model/Channel";
 import { headers } from "next/headers";
 import { writeFile } from "fs/promises";
 import { NextResponse } from "next/server";
+import cloudinary from "@/config/cloudinary";
 import connectDB from "@/config/connectDB.js";
 import { StatusCodes } from "http-status-codes";
 
@@ -31,8 +32,8 @@ export async function GET(request, { params }) {
         );
       }
 
-      findNews.views += 1
-      await findNews.save()
+      findNews.views += 1;
+      await findNews.save();
 
       return NextResponse.json(findNews, { status: StatusCodes.OK });
     } else {
@@ -69,19 +70,31 @@ export async function DELETE(request, { params }) {
         );
       }
 
-      const path = join(
-        "./",
-        "public",
-        "MediaFolders",
-        "ChannelLogo",
-        findNews?.image
-      );
+      const existingPublicId = findNews?.image?.public_id;
 
-      try {
-        await unlink(path);
-      } catch (unlinkError) {
+      if (!existingPublicId) {
         return NextResponse.json(
-          { Message: "Image path not found." },
+          { Message: "Image not found." },
+          { status: StatusCodes.NOT_FOUND }
+        );
+      }
+      const deletionResult = await cloudinary?.uploader?.destroy(
+        existingPublicId,
+        {
+          folder: "NewsImageNew",
+        },
+        (error, result) => {
+          if (error) {
+            return NextResponse.json(
+              { Message: "Error removing image." },
+              { status: StatusCodes.CONFLICT }
+            );
+          }
+        }
+      );
+      if (deletionResult?.result !== "ok") {
+        return NextResponse.json(
+          { Message: "Error removing the image." },
           { status: StatusCodes.NOT_FOUND }
         );
       }
@@ -172,40 +185,83 @@ export async function PUT(request, { params }) {
       }
 
       if (image) {
-        const path = join(
-          "./",
-          "public",
-          "MediaFolders",
-          "ChannelLogo",
-          findNews?.image
-        );
+        if (
+          typeof image === "object" &&
+          (image?.type === "image/jpeg" ||
+            image?.type === "image/jpg" ||
+            image?.type === "image/png")
+        ) {
+          if (image?.size > 1024 * 1024) {
+            return NextResponse.json(
+              {
+                Message:
+                  "Image size is too large. Please insert an image less than 1MB.",
+              },
+              { status: StatusCodes.BAD_REQUEST }
+            );
+          }
+        } else {
+          return NextResponse.json(
+            {
+              Message:
+                "Invalid format please try again. Only accepts '.jpeg', '.jpg', or '.png'.",
+            },
+            { status: StatusCodes.BAD_REQUEST }
+          );
+        }
 
-        try {
-          await unlink(path);
-        } catch (unlinkError) {
+        const bytes = await image?.arrayBuffer();
+        const buffer = Buffer.from(bytes);
+        const base64String = buffer.toString("base64");
+
+        const existingPublicId = findNews?.image?.public_id;
+
+        if (!existingPublicId) {
           return NextResponse.json(
             { Message: "Image not found." },
             { status: StatusCodes.NOT_FOUND }
           );
         }
+        const deletionResult = await cloudinary?.uploader?.destroy(
+          existingPublicId,
+          {
+            folder: "NewsImageNew",
+          },
+          (error, result) => {
+            if (error) {
+              return NextResponse.json(
+                { Message: "Error removing existing image." },
+                { status: StatusCodes.CONFLICT }
+              );
+            }
+          }
+        );
+        if (deletionResult?.result !== "ok") {
+          return NextResponse.json(
+            { Message: "Error updating the image." },
+            { status: StatusCodes.NOT_FOUND }
+          );
+        }
 
-        const bytes = await image.arrayBuffer();
-        const buffer = Buffer.from(bytes);
-        const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-
-        const newPath = join(
-          "./",
-          "public",
-          "MediaFolders",
-          "ChannelLogo",
-          uniqueSuffix + "-" + image?.name
+        const newResult = await cloudinary?.uploader?.upload(
+          `data:image/png;base64,${base64String}`,
+          {
+            folder: "NewsImageNew",
+          },
+          (error, result) => {
+            if (error) {
+              return NextResponse.json(
+                { Message: "Error adding new image." },
+                { status: StatusCodes.CONFLICT }
+              );
+            }
+          }
         );
 
-        const imageName = uniqueSuffix + "-" + image?.name;
+        updatedFields.image = {};
 
-        await writeFile(newPath, buffer);
-
-        updatedFields.image = image ? imageName : findNews?.image;
+        updatedFields.image.public_id = newResult?.public_id;
+        updatedFields.image.url = newResult?.secure_url;
       }
 
       const updatedNews = await News.findByIdAndUpdate(

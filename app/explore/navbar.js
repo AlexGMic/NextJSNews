@@ -59,7 +59,7 @@ export default async function Navbar() {
               </div>
             ) : (
               <Image
-                src={`${process.env.NEXTAUTH_URL}/MediaFolders/UsersImg/${userDetail?.picture}`}
+                src={`${userDetail?.picture?.url}`}
                 className="w-[100%] h-[100%] object-cover rounded-full"
                 alt="Admin Img"
                 priority={true}

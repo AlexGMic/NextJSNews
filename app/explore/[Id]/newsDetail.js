@@ -93,7 +93,7 @@ export default async function NewsDetail({ params }) {
           </div>
           <div className="w-full mt-8">
             <Image
-              src={`/MediaFolders/ChannelLogo/${newsDetail?.image}`}
+              src={`${newsDetail?.image?.url}`}
               className="w-full object-cover rounded-[20px]"
               alt="News Image"
               priority={true}
