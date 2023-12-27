@@ -46,10 +46,6 @@ export default function Login({ setLoginState }) {
       <div className="w-[70%] h-[60%] min-h-[50%] py-4 mx-auto border border-gray-300 rounded-[20px] flex flex-col justify-center items-center gap-[20px] max-[900px]:w-[90%]">
         <div className="w-[80%] flex flex-col gap-[10px] max-[900px]:w-[90%]">
           <span className="text-[30px] font-bold text-[#0D5C63] flex gap-4 items-center">
-            {/* <AiOutlineLeft
-              onClick={handleClick}
-              className="border border-[#0D5C63] rounded-[50%] p-1 cursor-pointer hover:bg-[#0D5C63] hover:text-white transition duration-500"
-            /> */}
             Login
           </span>
           {!error && (

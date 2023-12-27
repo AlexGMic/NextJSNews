@@ -121,12 +121,6 @@ export default function ResetPassword() {
               Reset Password
             </button>
           )}
-          {/* <button
-            onClick={handleResetPassword}
-            className="w-[90%] bg-[#0D5C63] py-2 px-4 text-white font-bold rounded-[5px]"
-          >
-            Reset Password
-          </button> */}
           <div className="text-[14px] flex items-center gap-[10px]">
             <span className="text-gray-500">Have an account?</span>
             <span className="text-[#0D5C63] font-bold cursor-pointer">

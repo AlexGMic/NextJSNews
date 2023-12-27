@@ -37,10 +37,6 @@ export default async function Navbar() {
   return (
     <div className="relative w-[100%] h-[100px]">
       <div className="w-[95%] h-[100%] mx-auto flex justify-between items-center gap-[20px]">
-        {/* <div className="flex items-center gap-[20px] min-[800px]:hidden">
-          <CiMenuBurger className="text-[30px] text-[#0D5C63] cursor-pointer font-bold" />
-          <span>News</span>
-        </div> */}
         <div className="flex items-center gap-[20px] max-[600px]:hidden">
           <MdMyLocation className="text-[30px] text-[#0D5C63]" />
           <span className="font-semibold text-[14px]">
