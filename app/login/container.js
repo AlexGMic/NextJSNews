@@ -13,11 +13,12 @@ export default function LoginContainer() {
         <div className="w-[50%] max-[1100px]:hidden">
           <Image
             className="w-full object-cover"
-            src="https://res.cloudinary.com/dc17hqknj/image/upload/v1703705880/ihf4k9tprplpec0zpwlf.jpg"
+            src={`${process.env.NEXT_PUBLIC_ARTWORK_URL}`}
             priority={true}
             alt="News Image"
             width={500}
             height={500}
+            loading="eager" // Add this line
           />
         </div>
         {loginState ? (
