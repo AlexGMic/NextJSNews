@@ -13,12 +13,12 @@ export default function LoginContainer() {
         <div className="w-[50%] max-[1100px]:hidden">
           <Image
             className="w-full object-cover"
-            src={`${process.env.NEXT_PUBLIC_ARTWORK_URL}`}
-            priority={true}
+            src={process.env.NEXT_PUBLIC_ARTWORK_URL}
+            placeholder="blur"
+            blurDataURL={"/artwork-4.jpg"}
             alt="News Image"
             width={500}
             height={500}
-            loading="eager" // Add this line
           />
         </div>
         {loginState ? (
