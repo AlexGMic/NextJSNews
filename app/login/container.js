@@ -13,7 +13,7 @@ export default function LoginContainer() {
         <div className="w-[50%] max-[1100px]:hidden">
           <Image
             className="w-full object-cover"
-            src="/artwork-4.jpg"
+            src={`${process.env.NEXT_PUBLIC_ARTWORK_URL}`}
             priority={true}
             alt="News Image"
             width={500}
