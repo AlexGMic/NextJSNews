@@ -4,6 +4,7 @@ import Login from "./login";
 import Signup from "./signup";
 import Image from "next/image";
 import { useState } from "react";
+import artwork from '../../public/artwork-4.jpg'
 
 export default function LoginContainer() {
   const [loginState, setLoginState] = useState(true);
@@ -13,9 +14,8 @@ export default function LoginContainer() {
         <div className="w-[50%] max-[1100px]:hidden">
           <Image
             className="w-full object-cover"
-            src={process.env.NEXT_PUBLIC_ARTWORK_URL}
-            placeholder="blur"
-            blurDataURL={"/artwork-4.jpg"}
+            src={artwork}
+            priority={true}
             alt="News Image"
             width={500}
             height={500}
