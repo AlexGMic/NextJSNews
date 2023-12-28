@@ -12,13 +12,12 @@ export default function LoginContainer() {
       <div className="w-[90%] h-[100vh] mx-auto flex items-center max-[1400px]:w-full">
         <div className="w-[50%] max-[1100px]:hidden">
           <Image
-            src="/MediaFolders/artwork-4.jpg"
+            src={`${process?.env?.NEXTAUTH_URL}/MediaFolders/artwork-4.jpg`}
             className="w-full object-cover"
+            priority={true}
             alt="News Image"
             width={500}
             height={500}
-            placeholder="blur"
-            blurDataURL="/MediaFolders/artwork-4.jpg"
           />
         </div>
         {loginState ? (
