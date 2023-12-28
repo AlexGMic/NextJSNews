@@ -11,7 +11,7 @@ export default function LoginContainer() {
       <div className="w-[90%] h-[100vh] mx-auto flex items-center max-[1400px]:w-full">
         <div className="w-[50%] max-[1100px]:hidden">
           <img
-            src={`${process?.env?.NEXT_PUBLIC_NEXTAUTH_URL}/MediaFolders/artwork-4.jpg`}
+            src={`/MediaFolders/artwork-4.jpg`}
             className="w-full object-cover"
             alt="News Image"
           />
