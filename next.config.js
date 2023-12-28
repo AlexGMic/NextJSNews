@@ -10,7 +10,9 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "mineabyssinianews.netlify.app"
+        hostname: "mineabyssinianews.netlify.app",
+        port: "",
+        pathname: "/MediaFolders/**"
       }
     ],
   },
