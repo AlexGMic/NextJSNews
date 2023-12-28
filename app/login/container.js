@@ -14,7 +14,6 @@ export default function LoginContainer() {
           <Image
             src={`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/artwork-4.jpg`}
             className="w-full object-cover"
-            priority={true}
             alt="News Image"
             width={500}
             height={500}
