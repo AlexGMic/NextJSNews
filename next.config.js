@@ -8,6 +8,10 @@ const nextConfig = {
         port: "",
         pathname: "/dc17hqknj/image/upload/**",
       },
+      {
+        protocol: "https",
+        hostname: "mineabyssinianews.netlify.app"
+      }
     ],
   },
 };
