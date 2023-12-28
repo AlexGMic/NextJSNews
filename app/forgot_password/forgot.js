@@ -53,7 +53,7 @@ export default function ForgotPassword() {
     router?.back();
   };
   return (
-    <div className="w-[50%] h-[100%] flex justify-center items-center max-[1100px]:w-[80%] max-[1100px]:mx-auto max-[900px]:w-[90%] max-[650px]:w-full">
+    <div className="w-[50%] mx-auto h-[100%] flex justify-center items-center max-[1100px]:w-[80%] max-[1100px]:mx-auto max-[900px]:w-[90%] max-[650px]:w-full">
       <div className="w-[70%] h-[60%] min-h-[50%] py-4 mx-auto border border-gray-300 rounded-[20px] flex flex-col justify-center items-center gap-[20px] max-[900px]:w-[90%]">
         <div className="w-[80%]  flex flex-col gap-[10px] max-[900px]:w-[90%]">
           <span className="text-[30px] font-bold text-[#0D5C63] flex gap-4 items-center max-[400px]:text-[25px]">
