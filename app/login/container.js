@@ -13,6 +13,7 @@ export default function LoginContainer() {
         <div className="w-[50%] max-[1100px]:hidden">
           <Image
             src={`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/MediaFolders/artwork-4.jpg`}
+            priority={true}
             className="w-full object-cover"
             alt="News Image"
             width={500}
